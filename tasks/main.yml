@@ -26,6 +26,7 @@
      comment: "{{ item.comment | default(omit) }}"
      createhome: "{{ not user_role_usezfs }}"
      group: "{{ item.group | default(omit) }}"
+     groups: "{{ item.groups | default(omit) }}"
      password: "{{ item.password | default(omit) }}"
      shell: "{{ item.shell | default(omit) }}"
      system: "{{ item.system | default('no') }}"

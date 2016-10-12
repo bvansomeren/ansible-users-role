@@ -10,7 +10,7 @@
      quota: "{{ item.quota }}"
      snapdir: "{{ users_role_snapdirenabled }}"
    when: "{{ user_role_usezfs }}"
-   with_items: "{{ users_role_groups }}" 
+   with_items: "{{ users_role_users }}" 
 
  - name: ensure depending groups exist
    group: 

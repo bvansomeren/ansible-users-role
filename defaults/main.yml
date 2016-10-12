@@ -1,0 +1,11 @@
+---
+# defaults file for bvansomeren.users
+
+user_role_usezfs: no
+
+users_role_users: []
+users_role_groups: []
+
+users_role_homedataset: "zroot/usr/home"
+users_role_defaulthome: "/home"
+users_role_snapdirenabled: "enabled"

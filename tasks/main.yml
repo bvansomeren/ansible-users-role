@@ -1,0 +1,54 @@
+---
+# tasks file for bvansomeren.users
+
+ - name: output users variable
+   debug: var=users_role_users verbosity=1
+
+ - name: ensure zfs mounts exist for users
+   zfs:
+     name: "{{ users_role_homedataset }}/{{ item.name }}"
+     quota: "{{ item.quota }}"
+     snapdir: "{{ users_role_snapdirenabled }}"
+   when: "{{ user_role_usezfs }}"
+   with_items: "{{ users_role_groups }}" 
+
+ - name: ensure depending groups exist
+   group: 
+     name: "{{ item.name }}" 
+     gid: "{{ item.gid | default(omit) }}" 
+     system: "{{ item.system | default('no')  }}"
+     state: present
+   with_items: "{{ users_role_groups }}"
+
+ - name: ensure users are created with the right settings  
+   user: 
+     name: "{{ item.name }}" 
+     comment: "{{ item.comment | default(omit) }}"
+     createhome: "{{ not user_role_usezfs }}"
+     group: "{{ item.group | default(omit) }}"
+     password: "{{ item.password | default(omit) }}"
+     shell: "{{ item.shell | default(omit) }}"
+     system: "{{ item.system | default('no') }}"
+     uid: "{{ item.uid | default(omit) }}"
+     state: present 
+   with_items: "{{ users_role_users }}"
+
+ - name: ensure users with archived backups have their files unpacked in their home folder
+   unarchive:
+     src: "{{ item.archive_file }}"
+     copy: "{{ item.archive_remote | default('yes') }}"
+     dest: "{{ users_role_defaulthome }}/{{ item.name }}/"
+     owner: "{{ item.name }}"
+     group: "{{ item.group }}"
+   when: "{{ item.archive_file is defined }}"
+   with_items: "{{ users_role_users }}"
+
+ - name: ensure users with copy_folder have their files copied into their home folder
+   copy:
+     src: "{{ item.copy_folder }}"
+     dest: "{{ users_role_defaulthome }}/{{ item.name }}/"
+     force: "no"
+     owner: "{{ item.name }}"
+     group: "{{ item.group }}"
+   when: "{{ item.copy_folder is defined }}"
+   with_items: "{{ users_role_users }}"
